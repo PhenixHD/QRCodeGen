@@ -10,7 +10,8 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="0.1*"/>
-            <RowDefinition Height="0.9*"/>
+            <RowDefinition Height="0.8*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -24,11 +25,26 @@
                 Generate
             </Button>
 
-            <TextBox x:Name="textboxURL" Grid.Column="1"
-                     Margin="0,0,0,10" TextAlignment="Center"/>
+            <TextBox x:Name="textboxInput" Grid.Column="1"
+                     Margin="0,0,0,10" TextAlignment="Center" VerticalContentAlignment="Center"/>
         </Grid>
 
-        <Image x:Name="imageQRCode" Grid.Row="1"></Image>
+        <Image x:Name="imageQRCode" Grid.Row="1" Stretch="Uniform"></Image>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.9*"/>
+                <ColumnDefinition Width="0.1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label x:Name="labelCurrentState" FontSize="14" FontWeight="Medium" Content="Current: QR-Mode"/>
+            <Button x:Name="buttonChangeMode" Click="ChangeGenerationMode_Click" Grid.Column="1">
+                <Viewbox Stretch="Uniform" Width="20" Height="20">
+                    <TextBlock Text="⭮"/>
+                </Viewbox>
+            </Button>
+        </Grid>
+        
 
     </Grid>
 </Window>

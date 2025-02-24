@@ -1,51 +1,78 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using BarcodeStandard;
+using QRCoder;
+using SkiaSharp;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static System.Net.Mime.MediaTypeNames;
-using QRCoder;
-using System.IO;
 
 namespace QRCodeGen;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
-{
-    public MainWindow()
-    {
+public partial class MainWindow : Window {
+    private bool isQRMode = true;
+    public MainWindow() {
         InitializeComponent();
     }
 
     private void GenerateQRCode(object sender, RoutedEventArgs e) {
+        if (!string.IsNullOrWhiteSpace(textboxInput.Text)) {
+            if (isQRMode) {
+                using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+                using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(textboxInput.Text, QRCodeGenerator.ECCLevel.Q))
+                using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData)) {
+                    byte[] qrCodeImage = qrCode.GetGraphic(50);
 
-        if (!string.IsNullOrWhiteSpace(textboxURL.Text)) {
-            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-            using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(textboxURL.Text, QRCodeGenerator.ECCLevel.Q))
-            using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData)) {
+                    BitmapImage bitmap = new BitmapImage();
+                    using (var ms = new MemoryStream(qrCodeImage)) {
+                        bitmap.BeginInit();
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.StreamSource = ms;
+                        bitmap.EndInit();
+                        bitmap.Freeze();
+                    }
 
-                byte[] qrCodeImage = qrCode.GetGraphic(50);
+                    imageQRCode.Source = bitmap;
+                }
+            } else {
 
-                BitmapImage bitmap = new BitmapImage();
-                using (var ms = new MemoryStream(qrCodeImage)) {
+                foreach (char c in textboxInput.Text) {
+                    if (!char.IsDigit(c))
+                        return;
+                }
+
+                Barcode bc = new Barcode() {
+                    IncludeLabel = true
+                };
+                SkiaSharp.SKImage barcodeImage = bc.Encode(BarcodeStandard.Type.Code128, textboxInput.Text);
+
+                using (var data = barcodeImage.Encode(SKEncodedImageFormat.Png, 100))
+                using (var ms = new MemoryStream(data.ToArray())) {
+                    BitmapImage bitmap = new BitmapImage();
                     bitmap.BeginInit();
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.StreamSource = ms;
                     bitmap.EndInit();
                     bitmap.Freeze();
-                }
 
-                imageQRCode.Source = bitmap;
+                    imageQRCode.Source = bitmap;
+                }
             }
+        }
+    }
+
+
+    private void ChangeGenerationMode_Click(object sender, RoutedEventArgs e) {
+        isQRMode = !isQRMode;
+
+        if (isQRMode) {
+            labelCurrentState.Content = "Current: QR-Mode";
+        } else {
+            labelCurrentState.Content = "Current: BAR-Mode";
         }
     }
 }
