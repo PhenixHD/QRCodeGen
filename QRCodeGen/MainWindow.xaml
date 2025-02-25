@@ -5,19 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QRCodeGen"
         mc:Ignorable="d"
-        Title="QR Generator" Height="500" Width="450">
-    
+        Title="QR Generator" Height="500" Width="450" ResizeMode="NoResize">
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.1*"/>
-            <RowDefinition Height="0.8*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="0.1*" />
+            <RowDefinition Height="0.8*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.3*"/>
-                <ColumnDefinition Width="0.7*"/>
+                <ColumnDefinition Width="0.3*" />
+                <ColumnDefinition Width="0.7*" />
             </Grid.ColumnDefinitions>
 
             <Button x:Name="buttonGenerate" Margin="0,0,10,10"
@@ -26,25 +26,29 @@
             </Button>
 
             <TextBox x:Name="textboxInput" Grid.Column="1"
-                     Margin="0,0,0,10" TextAlignment="Center" VerticalContentAlignment="Center"/>
+                     Margin="0,0,0,10" TextAlignment="Center" VerticalContentAlignment="Center" />
         </Grid>
 
         <Image x:Name="imageQRCode" Grid.Row="1" Stretch="Uniform"></Image>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.9*"/>
-                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition Width="0.8*" />
+                <ColumnDefinition Width="0.1*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="0.1*" />
             </Grid.ColumnDefinitions>
 
-            <Label x:Name="labelCurrentState" FontSize="14" FontWeight="Medium" Content="Current: QR-Mode"/>
-            <Button x:Name="buttonChangeMode" Click="ChangeGenerationMode_Click" Grid.Column="1">
+            <Label x:Name="labelCurrentState" FontSize="14" FontWeight="Medium" Content="Current: QR-Mode" />
+            <Button x:Name="buttonSaveQR" Click="SaveQRCode_Click" Grid.Column="1"
+                    FontWeight="Medium">
+                Save
+            </Button>
+            <Button x:Name="buttonChangeMode" Click="ChangeGenerationMode_Click" Grid.Column="3">
                 <Viewbox Stretch="Uniform" Width="20" Height="20">
-                    <TextBlock Text="⭮"/>
+                    <TextBlock Text="⭮" />
                 </Viewbox>
             </Button>
         </Grid>
-        
-
     </Grid>
 </Window>

@@ -1,11 +1,9 @@
 ﻿using BarcodeStandard;
+using Microsoft.Win32;
 using QRCoder;
 using SkiaSharp;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace QRCodeGen;
@@ -65,7 +63,6 @@ public partial class MainWindow : Window {
         }
     }
 
-
     private void ChangeGenerationMode_Click(object sender, RoutedEventArgs e) {
         isQRMode = !isQRMode;
 
@@ -73,6 +70,34 @@ public partial class MainWindow : Window {
             labelCurrentState.Content = "Current: QR-Mode";
         } else {
             labelCurrentState.Content = "Current: BAR-Mode";
+        }
+    }
+
+    private void SaveQRCode_Click(object sender, RoutedEventArgs e) {
+
+        if (imageQRCode.Source is BitmapSource bitmapSource) {
+            SaveFileDialog saveFileDialog = new SaveFileDialog {
+                Filter = "PNG Image|*.png|JPEG Image|*.jpg",
+                Title = "Save QR Code or Barcode",
+                FileName = "QRCode"
+            };
+
+            if (saveFileDialog.ShowDialog() == true) {
+                using (FileStream stream = new FileStream(saveFileDialog.FileName, FileMode.Create)) {
+                    BitmapEncoder encoder;
+
+                    if (Path.GetExtension(saveFileDialog.FileName).ToLower() == ".jpg") {
+                        encoder = new JpegBitmapEncoder();
+                    } else {
+                        encoder = new PngBitmapEncoder();
+                    }
+
+                    encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+                    encoder.Save(stream);
+                }
+            }
+        } else {
+            MessageBox.Show("No image to save.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }
